@@ -32,7 +32,7 @@ module.exports = function gulpSvelte(options) {
 			}
 
 			let result;
-
+			
 			try {
 				result = compile(file.contents.toString(), Object.assign({filename: file.path}, options));
 			} catch (err) {
@@ -44,15 +44,25 @@ module.exports = function gulpSvelte(options) {
 				return;
 			}
 
-			if (file.path) {
-				file.path = replaceExt(file.path, '.js');
-				result.map.file = file.path;
-			} else {
-				result.map.file = '__no_filename__';
+			let code = '';
+			let map = {};
+			if (result.css.code !== null) {
+				code += result.css.code;
+				map = Object.assign(map, result.css.map);
+			}
+			if (result.js.code !== null) {
+				code += result.js.code;
+				map = Object.assign(map, result.js.map);
 			}
 
-			file.contents = Buffer.from(result.code);
-			vinylSourcemapsApply(file.contents, result.map);
+			if (file.path) {
+				file.path = replaceExt(file.path, '.js');
+				map.file = file.path;
+			} else {
+				map.file = '__no_filename__';
+			}
+			file.contents = Buffer.from(code);
+			vinylSourcemapsApply(file.contents, map);
 
 			cb(null, file);
 		}
