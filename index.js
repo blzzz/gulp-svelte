@@ -46,10 +46,6 @@ module.exports = function gulpSvelte(options) {
 
 			let code = '';
 			let map = {};
-			if (result.css.code !== null) {
-				code += result.css.code;
-				map = Object.assign(map, result.css.map);
-			}
 			if (result.js.code !== null) {
 				code += result.js.code;
 				map = Object.assign(map, result.js.map);
